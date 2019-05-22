@@ -27,7 +27,7 @@ export default class Dialogfileupload extends React.Component<Props, any>{
    */
   constructor(props: any){
     super(props);
-    this.onChanceFile = this.onChanceFile.bind(this);
+    this.onChangeFile = this.onChangeFile.bind(this);
     this.onCloseDialogImage = this.onCloseDialogImage.bind(this);
     this.input = React.createRef();
   }
@@ -40,7 +40,7 @@ export default class Dialogfileupload extends React.Component<Props, any>{
   }
 
   /**
-   * [on props chance, then fire the click event from input element to start the file handling]
+   * [on props change, then fire the click event from input element to start the file handling]
    */
   componentWillReceiveProps(){
     if(this.input.current!=null){
@@ -49,10 +49,10 @@ export default class Dialogfileupload extends React.Component<Props, any>{
   }
 
   /**
-   * [handler for chance input element]
+   * [handler for change input element]
    * @type {any} e
    */
-  public onChanceFile(e: any): void{
+  public onChangeFile(e: any): void{
     const files = Array.from(e.target.files);
     if(files.length>0){
       let reader = new FileReader();
@@ -79,7 +79,7 @@ export default class Dialogfileupload extends React.Component<Props, any>{
     if(this.state.img!=null) return (<DialogImage img={this.state.img} onClose={this.onCloseDialogImage} />)
     return (
       <div>
-        <input type="file" accept="image/*" ref={this.input} onChange={this.onChanceFile} style={{display: 'none'}} />
+        <input type="file" accept="image/*" ref={this.input} onChange={this.onChangeFile} style={{display: 'none'}} />
       </div>
     );
   }

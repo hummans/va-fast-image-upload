@@ -70,7 +70,7 @@ export default class Dialogcamera extends React.Component<Props, any>{
     this.handleClose = this.handleClose.bind(this);
     this.state.open = this.props.open;
     this.cameraRef = React.createRef();
-    this.handleChanceSelect = this.handleChanceSelect.bind(this);
+    this.handleChangeSelect = this.handleChangeSelect.bind(this);
     this.onSelectDeviceId = this.onSelectDeviceId.bind(this);
     this.onCloseDialogImage = this.onCloseDialogImage.bind(this);
   }
@@ -108,7 +108,7 @@ export default class Dialogcamera extends React.Component<Props, any>{
   }
 
   /**
-   * [chance the stream]
+   * [change the stream]
    * @type {string|null} deviceId [if the paramenter are NOT null, then the option to create the stream are the default options]
    */
   private setStream(deviceId: string|null = null): Promise<object>{
@@ -191,9 +191,9 @@ export default class Dialogcamera extends React.Component<Props, any>{
   }
 
   /**
-   * [handling function to chance the stream interface]
+   * [handling function to change the stream interface]
    */
-  public handleChanceSelect(): void{
+  public handleChangeSelect(): void{
     switch(this.devices.length){
       case 2:
         this.setStream(this.devices.filter((device: any) => device.deviceId!==this.selectDeviceId)[0].deviceId).then((stream: object)=>{
@@ -215,7 +215,7 @@ export default class Dialogcamera extends React.Component<Props, any>{
       return (<DialogImage img={this.state.img} onClose={this.onCloseDialogImage} />)
     }
 
-    const ActionFooter = !this.state.showDialogActions? null: (<Button onClick={this.handleChanceSelect} color="primary" className="change-camera">
+    const ActionFooter = !this.state.showDialogActions? null: (<Button onClick={this.handleChangeSelect} color="primary" className="change-camera">
       <CameraFront fontSize="large" />
     </Button>);
 

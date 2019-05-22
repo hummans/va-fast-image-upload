@@ -21,7 +21,7 @@ export default class Camera extends React.Component<Props, any> {
 
 
   /**
-   * [on props chance, then will be update the stream]
+   * [on props change, then will be update the stream]
    * @param  {any} nextProps
    */
   componentWillReceiveProps(nextProps: any){
