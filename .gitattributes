@@ -1,1 +1,2 @@
-linguist-language=PHP
+*.php linguist-language=C
+va-fast-image-upload-js-src/*.tsx linguist-language=Typescript
