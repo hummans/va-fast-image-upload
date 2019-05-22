@@ -1,3 +1,7 @@
+/**
+ * Coded By : aigenseer
+ * Copyright 2019, https://github.com/aigenseer
+ */
 export default class VideoStream {
 
   private DEFAULT_VIDEO_SETTINGS: object
@@ -9,7 +13,7 @@ export default class VideoStream {
   }
 
    /**
-    * [isMobile return if device mobile or desktop]
+    * [if device mobile or desktop]
     * @return {Boolean}
     */
    public isMobile(): boolean{
@@ -17,7 +21,7 @@ export default class VideoStream {
    }
 
   /**
-   * [getDevices return list of devices]
+   * [deliver list of devices]
    * @return {Promise} Array<any>
    */
   public getDevices(): Promise<Array<any>>{
@@ -36,11 +40,21 @@ export default class VideoStream {
     });
   }
 
+  /**
+   * [close all track from streams]
+   */
   public close(): void{
-    this.stream.getTracks().forEach((track: any) => track.stop())
-    this.stream=null;
+    if(this.stream!=null){
+      this.stream.getTracks().forEach((track: any) => track.stop())
+      this.stream=null;
+    }
   }
 
+  /**
+   * [deliver stream]
+   * @type {object} option [if the option are change, then close all streams and create a new]
+   * @return {Promise} object
+   */
   public getStream(option: object = this.DEFAULT_VIDEO_SETTINGS): Promise<object>{
     return new Promise((resolve: any, reject: any)=>{
       if(this.stream!=null && this.lastOption == option){
