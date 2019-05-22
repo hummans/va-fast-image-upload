@@ -1,0 +1,13 @@
+.dialogchoice h1:not(.site-title):before,
+.dialogchoice h2:before {
+  display: none;
+}
+
+.dialogchoice .button-wrapper{
+  justify-content: center;
+  display: flex;
+}
+
+.dialogchoice .button-wrapper svg{
+  font-size: 4em;
+}

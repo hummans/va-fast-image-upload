@@ -1,0 +1,9 @@
+.dialogsend .content{
+  display: flex;
+  justify-content: center;
+}
+
+.dialogsend h1:not(.site-title):before, 
+.dialogsend h2:before {
+  display: none;
+}

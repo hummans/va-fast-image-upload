@@ -1,0 +1,21 @@
+
+.dialogimage .content{
+  position: relative;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialogimage .content img{
+  max-width: 80%;
+  margin: 10px;
+}
+
+.dialogimage .fab{
+  position: fixed;
+  z-index: 10;
+  bottom: 1%;
+  right: 3%;
+  color: white;
+}
