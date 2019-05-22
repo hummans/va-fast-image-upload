@@ -1,2 +1,1 @@
-./*.php linguist-language=PHP
-va-fast-image-upload-js-src/*.tsx linguist-language=Typescript
+*.tsx linguist-vendored=false
