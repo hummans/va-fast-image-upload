@@ -97,7 +97,7 @@ class FIU_UploadList extends WP_List_Table
      * @Override
      * @return Array
      */
-    function get_bulk_actions()
+    public function get_bulk_actions()
 		{
       $actions = array(
         sprintf('%s-delete', UPLOAD_IMAGE_PREFIX)    => 'Delete',
@@ -134,18 +134,25 @@ class FIU_UploadList extends WP_List_Table
     private function sort_data( $a, $b )
     {
         // Set defaults
-        $orderby = 'title';
+        $orderby = 'timestamp';
         $order = 'asc';
         // If orderby is set, use this as the sort column
         if(!empty($_GET['orderby']))
         {
-            $orderby = $_GET['orderby'];
+					$value = sanitize_text_field($_GET['orderby']);
+					if(in_array($value, array_keys($this->get_sortable_columns()))){
+						$orderby = $value;
+					}
         }
         // If order is set use this as the order
         if(!empty($_GET['order']))
         {
-            $order = $_GET['order'];
+					$value = sanitize_text_field($_GET['orderby']);
+					if($value == 'asc' and $value == 'desc'){
+						$order = $value;
+					}
         }
+
         $result = strcmp( $a[$orderby], $b[$orderby] );
         if($order === 'asc')
         {
@@ -164,13 +171,27 @@ class FIU_UploadList extends WP_List_Table
     }
 
 		/**
+		 * [check the item from $_POST and deliver validate list]
+		 * @return array
+		 */
+		private function getValidateItems(){
+			$items = [];
+			if(array_key_exists('items', $_POST) and is_array($_POST['items'])){
+				foreach ($_POST['items'] as $item) {
+					$items[] = intval(sanitize_key($item));
+				}
+			}
+			return $items;
+		}
+
+		/**
 		 * [fetch the items from global $_POST variable and create a zip archiv to download it]
 		 */
     private function bulk_action_download(){
+			$items = $this->getValidateItems();
       if ( isset($_POST['action'])
         and $_POST['action'] == UPLOAD_IMAGE_PREFIX.'-download'
-        and isset($_POST['items'])
-        and count($_POST['items']) > 0 )
+        and count($items) > 0 )
       {
         $filename = tempnam("tmp", "zip");
 
@@ -178,7 +199,7 @@ class FIU_UploadList extends WP_List_Table
         if ($zip->open($filename, ZipArchive::CREATE)!==TRUE) {
             exit("cannot open <$filename>\n");
         }
-        foreach ($_POST['items'] as $id) {
+        foreach ($items as $id) {
           $entry = $this->db->get($id);
           if(file_exists($entry->path))
           {
@@ -200,12 +221,12 @@ class FIU_UploadList extends WP_List_Table
 		 * [ the ids from global $_POST variable and delete the entrys ]
 		 */
     private function bulk_action_delete(){
+			$items = $this->getValidateItems();
       if ( isset($_POST['action'])
         and $_POST['action'] == UPLOAD_IMAGE_PREFIX.'-delete'
-        and isset($_POST['items'])
-        and count($_POST['items']) > 0 )
+        and count($items) > 0 )
       {
-        $delete_ids = esc_sql( $_POST['items'] );
+        $delete_ids = esc_sql( $items );
         $this->db->delete($delete_ids);
       }
     }

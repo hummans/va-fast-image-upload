@@ -178,16 +178,51 @@ class FIU_PluginSettings {
     }
 
     /**
+     * [return validate post values]
+     * @param  string  $group
+     * @return array
+     */
+    private function getValidatePost(string $group)
+    {
+      $data = [];
+      $defaultValues = $this->getDefaultData($group);
+      foreach ($_POST as $key => $value) {
+        if(property_exists($defaultValues, $key)){
+          if(property_exists($defaultValues->{$key}, 'validate')){
+            $validate = $defaultValues->{$key}->validate;
+            $data[$key] = $validate($value);
+          }else{
+            switch ($defaultValues->{$key}->type) {
+              case 'long-string':
+              case 'string':
+                $data[$key] = sanitize_text_field($value);
+                break;
+              case 'number':
+                $data[$key] = intval(sanitize_key($value));
+                break;
+              case 'boolean':
+                $value = intval(sanitize_key($value));
+                if($value == 1 or $value == 0){
+                 $data[$key] = $value;
+                }
+                break;
+              default:
+                break;
+            }
+          }// if else
+        }//if
+      }//foreach
+      return $data;
+    }
+
+    /**
      * [derivers all values from the global variable $_POST and updates them]
      * @param  string $group
      */
     public function fetchPost(string $group)
     {
-      if(count($_POST)==0){
-        return;
-      }
-      $_values = $this->mergWithDefaultValues($_POST, $group, false);
-
+      $post = $this->getValidatePost($group);
+      $_values = $this->mergWithDefaultValues($post, $group, false);
       foreach ($_values as $key => $value) {
         if(!$value->change && $this->is($key)){
           switch ($value->type) {

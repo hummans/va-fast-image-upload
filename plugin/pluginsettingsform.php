@@ -8,53 +8,59 @@
  * @param  stdobject $entry
  * @return String
  */
-function qsr_printDescription($entry)
+function fiu_printDescription($entry)
 {
+  $description = esc_html($entry->description);
   if(property_exists($entry, 'description')){
     return <<<HTML
-    <p class="description">$entry->description</p>
+    <p class="description">$description</p>
 HTML;
   }
 }
-$printDescription = 'qsr_printDescription';
+$fiu_printDescription = 'fiu_printDescription';
 
 foreach ($formvalues as $name => $entry){
+  $title = esc_html($entry->title);
   print <<<HTML
     <tr>
-      <th scope="row"><label for="name">$entry->title</label></th>
+      <th scope="row"><label for="name">$title</label></th>
 HTML;
+  $name = esc_html($name);
+  $value = esc_html($entry->value);
+  $placeholder = esc_html($entry->placeholder);
   switch ($entry->type) {
     case 'string':
       print <<<HTML
         <td>
-          <input type='text' name='$name' value='$entry->value' placeholder='$entry->placeholder' />
-          {$printDescription($entry)}
+          <input type='text' name='$name' value='$value' placeholder='$placeholder' />
+          {$fiu_printDescription($entry)}
         </td>
 HTML;
       break;
       case 'long-string':
         print <<<HTML
           <td>
-            <textarea name="$name" class="regular-text" placeholder='$entry->placeholder' rows="3">$entry->value</textarea>
-            {$printDescription($entry)}
+            <textarea name="$name" class="regular-text" placeholder='$placeholder' rows="3">$value</textarea>
+            {$fiu_printDescription($entry)}
           </td>
 HTML;
       break;
       case 'number':
+        $minvalue = esc_html($entry->minvalue);
+        $maxvalue = esc_html($entry->maxvalue);
         print <<<HTML
           <td>
-            <input name='$name' type="number" value='$entry->value' min='$entry->minvalue' max='$entry->maxvalue' />
-            {$printDescription($entry)}
+            <input name='$name' type="number" value='$value' min='$minvalue' max='$maxvalue' />
+            {$fiu_printDescription($entry)}
           </td>
 HTML;
     break;
-
     case 'boolean':
       $checked = checked( $entry->value, true, false );
       print <<<HTML
         <td>
           <input name='$name' type="checkbox" value='1' $checked />
-          {$printDescription($entry)}
+          {$fiu_printDescription($entry)}
         </td>
 HTML;
 
@@ -63,7 +69,7 @@ HTML;
     print <<<HTML
       <td>
         <span>$name</span>
-        {$printDescription($entry)}
+        {$fiu_printDescription($entry)}
       </td>
 HTML;
       break;

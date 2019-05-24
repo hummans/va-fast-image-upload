@@ -4,9 +4,18 @@
  *  saves the uploaded files in the db and wordpress upload files]
  * @param  stdObject $data
  */
-function rest_api_upload($data)
+function fiu_rest_api_upload($data)
 {
   global $fiu_pluginsettings;
+  if(!array_key_exists(FIU_PREFIX, $_FILES)){
+    return new WP_Error('No File send', sprintf('Can not find file with name %s', FIU_PREFIX), array('status' => 400));
+  }
+  if(strpos($_FILES[FIU_PREFIX]['type'], 'image')===false){
+    return new WP_Error('No Image', sprintf('File %s is no image', $_FILES[FIU_PREFIX]['name']), array('status' => 400));
+  }
+  if($_FILES[FIU_PREFIX]['size']==0){
+    return new WP_Error('No Image', sprintf('File %s size is zero', $_FILES[FIU_PREFIX]['name']), array('status' => 400));
+  }
   $maxFingerprintUpload = $fiu_pluginsettings->getAll('settings')->maxFingerprintUpload->value;
   $fingerprint = $data->get_param('id');
 
@@ -18,26 +27,24 @@ function rest_api_upload($data)
     return new WP_Error('Max uploads per day', 'Unfortunately, you have reached your maximum number of uploads. Try it again tomorrow.', array('status' => 406));
   }
 
-  if(array_key_exists(FIU_PREFIX, $_FILES)){
-    if ( ! function_exists( 'wp_handle_upload' ) ) {
-      require_once( ABSPATH . 'wp-admin/includes/file.php' );
-    }
-
-    try {
-        $upload_overrides = array( 'test_form' => false );
-        $movefile = wp_handle_sideload( $_FILES[FIU_PREFIX], $upload_overrides );
-    } catch (\Exception $e) {
-        return new WP_Error('Unkown Error', $e->message, array('status' => 400));
-    }
-
-    if ( $movefile && ! isset( $movefile['error'] ) ) {
-        $upload = new FIU_UploadTable(FIU_PREFIX);
-        $upload->add($data->get_param('id'), $movefile["file"], $movefile["url"]);
-        $responseData->status = 'success';
-    } else {
-        return new WP_Error('Unkown Error', $movefile['error'], array('status' => 400));
-    }
+  if ( ! function_exists( 'wp_handle_upload' ) ) {
+    require_once( ABSPATH . 'wp-admin/includes/file.php' );
   }
+  try {
+      $upload_overrides = array( 'test_form' => false );
+      $movefile = wp_handle_sideload( $_FILES[FIU_PREFIX], $upload_overrides );
+  } catch (\Exception $e) {
+      return new WP_Error('Unkown Error', $e->message, array('status' => 400));
+  }
+  
+  if ( $movefile && ! isset( $movefile['error'] ) ) {
+      $upload = new FIU_UploadTable(FIU_PREFIX);
+      $upload->add($data->get_param('id'), $movefile["file"], $movefile["url"]);
+      $responseData->status = 'success';
+  } else {
+      return new WP_Error('Unkown Error', $movefile['error'], array('status' => 400));
+  }
+
   $response = new WP_REST_Response( $responseData );
   $response->set_status( $status );
 
@@ -50,7 +57,7 @@ function rest_api_upload($data)
 add_action( 'rest_api_init', function () {
   register_rest_route(FIU_PREFIX."/".FIU_API_VERSION, '/upload/(?P<id>[a-zA-Z0-9-]+)', array(
     'methods' => 'POST',
-    'callback' => 'rest_api_upload',
+    'callback' => 'fiu_rest_api_upload',
   ));
 });
 

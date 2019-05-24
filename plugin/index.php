@@ -44,7 +44,15 @@ $fiu_pluginsettings = new FIU_PluginSettings(FIU_PREFIX, (object)[
       'type' => 'string',
       'defaultvalue' => get_rest_url().FIU_PREFIX."/".FIU_API_VERSION."/upload/%FINGERPRINT",
       'placeholder' => 'wordpress-upload',
-      'description' => 'url path to upload the file. (The fingerprint id can be set with %FINGERPRINT)'
+      'description' => 'url path to upload the file. (The fingerprint id can be set with %FINGERPRINT)',
+      'validate' => function ($raw){
+        $url = sanitize_text_field($raw);
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+          return esc_url($url, ['http', 'https']);
+        }else{
+          return '';
+        }
+      }
     ],
     'maxFingerprintUpload' => (object)[
       'title' => 'Max upload per day',
